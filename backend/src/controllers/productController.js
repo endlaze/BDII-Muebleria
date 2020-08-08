@@ -17,8 +17,8 @@ export const newProduct = (req, res) => {
     request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
     request.addParameter('foto', TYPES.VarBinary, prodImg);
     request.on('doneProc', (rowCount, more, returnStatus, rows) => {
-        let msg = returnStatus ?  'No se puedo insertar el producto':'Producto insertado correctamente'
-        res.status(returnStatus ?  500 :200 ).send({ status: returnStatus, msg: msg })
+        let msg = returnStatus ? 'No se pudo insertar el producto' : 'Producto insertado correctamente'
+        res.status(returnStatus ? 500 : 200).send({ status: returnStatus, msg: msg })
     });
 
     connection.callProcedure(request);
