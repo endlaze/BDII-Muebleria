@@ -9,7 +9,7 @@ let config = {
 	authentication: {
 		type: "default",
 		options: {
-			userName: process.env.USER,
+			userName: process.env.SQLUSR,
 			password: process.env.PASSWORD
 		}
 	},
