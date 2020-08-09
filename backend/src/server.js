@@ -1,8 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import productRouter from './routes/productRouter.js';
-import orderRouter from './routes/orderRouter.js';
-import clientRouter from './routes/clientRouter.js';
+import Router from './routes/Router.js'
 
 let server = express();
 
@@ -20,8 +18,6 @@ server.use((req, res, next) => {
   next();
 });
 
-server.use('/product', productRouter);
-server.use('/order', orderRouter);
-server.use('/client', clientRouter);
+Router(server);
 
 export default server;
