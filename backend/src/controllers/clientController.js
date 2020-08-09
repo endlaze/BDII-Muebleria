@@ -47,3 +47,13 @@ export const getAllUserCoupons = (req, res) => {
         res.status(result.codigo).send(result)
     });
 }
+
+export const validateCoupon = (req, res) => {
+
+    mysqlConnection.query("CALL usp_validarCupon(?, ?)", req.body.cedulaCliente, (err, result) => {
+        if (err) throw err;
+
+        result = JSON.parse(result[0][0].response)
+        res.status(result.codigo).send(result)
+    });
+}
