@@ -4,8 +4,8 @@ import Router from './routes/Router.js'
 
 let server = express();
 
-server.listen(3000, () => {
-  console.log('App listening on port 3000');
+server.listen(5000, () => {
+  console.log('App listening on port 5000');
 });
 
 server.use(bodyParser.json());
