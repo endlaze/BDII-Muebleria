@@ -12,14 +12,6 @@ export const createEmployee = (req, res) => {
 
     const request = new Request('usp_insertarEmpleado', err => console.log(err));
 
-    const idSucursal = parseInt(req.body.idSucursal)
-    const cedulaEmpleado = parseInt(req.body.cedulaEmpleado)
-    const nombre = parseInt(req.body.nombre)
-    const apellido1 = parseInt(req.body.apellido1)
-    const apellido2 = parseInt(req.body.apellido2)
-    const fechaContratacion = parseInt(req.body.fechaContratacion)
-    const contrasena = parseInt(req.body.contrasena)
-    const idTipoEmpleado = parseInt(req.body.idTipoEmpleado)
 
     let json = req.body
   
@@ -29,7 +21,6 @@ export const createEmployee = (req, res) => {
       foto = new Buffer(json.foto, 'base64');
       delete json.foto
       request.addParameter('foto', TYPES.VarBinary, foto);
-
     }
       
 
@@ -39,7 +30,7 @@ export const createEmployee = (req, res) => {
 
     request.on('doneProc', (rowCount, more, returnStatus, rows) => {
       console.log(returnStatus)
-        res.status(200).send({ response: response })
+        res.status(200).send(JSON.parse(response))
     });
 
     request.on('returnValue', (parameterName, value, metadata) => {
@@ -47,4 +38,44 @@ export const createEmployee = (req, res) => {
     });
 
     connection.callProcedure(request);
+}
+
+export const login = (req, res) => {
+  const request = new Request('usp_loginEmpleado', err => console.log(err));
+
+  request.addParameter('json', TYPES.VarChar, JSON.stringify(req.body));
+  request.addOutputParameter('response', TYPES.VarChar);
+
+  let response;
+
+  request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+    console.log(returnStatus)
+      res.status(200).send(JSON.parse(response))
+  });
+
+  request.on('returnValue', (parameterName, value, metadata) => {
+    if (parameterName === 'response') response = value
+  });
+
+  connection.callProcedure(request);
+}
+
+export const calculateSalary = (req, res) => {
+  const request = new Request('usp_salarioEmpleado', err => console.log(err));
+
+  request.addParameter('json', TYPES.VarChar, JSON.stringify(req.body));
+  request.addOutputParameter('response', TYPES.VarChar);
+
+  let response;
+
+  request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+    console.log(returnStatus)
+      res.status(200).send(JSON.parse(response))
+  });
+
+  request.on('returnValue', (parameterName, value, metadata) => {
+    if (parameterName === 'response') response = value
+  });
+
+  connection.callProcedure(request);
 }

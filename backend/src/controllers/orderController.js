@@ -27,3 +27,45 @@ export const updateOrderState = (req, res) => {
 
     connection.callProcedure(request);
 }
+
+export const newOnlineOrder = (req, res) => {
+
+    const request = new Request('usp_insertarOrdenOnline', err => console.log(err));
+    request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addOutputParameter('response', TYPES.VarChar)
+    
+    let response = {}
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        console.log(returnStatus)
+        console.log(response)
+        res.status(200).send(response)
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
+}
+
+export const newOnsiteOrder = (req, res) => {
+
+    const request = new Request('usp_insertarOrdenPresencial', err => console.log(err));
+    request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addOutputParameter('response', TYPES.VarChar)
+
+    let response = {}
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        console.log(returnStatus)
+        console.log(response)
+        res.status(200).send(response)
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
+}

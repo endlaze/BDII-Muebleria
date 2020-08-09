@@ -23,3 +23,23 @@ export const newProduct = (req, res) => {
 
     connection.callProcedure(request);
 }
+
+export const allProducts = (req, res) => {
+    const request = new Request('usp_obtenerProductos', err=> console.log(err));
+    
+    request.addOutputParameter('response', TYPES.VarChar)
+
+    let response;
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        console.log(returnStatus)
+        console.log(response)
+        res.status(200).send({ response: response })
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+    
+    connection.callProcedure(request);
+} 
