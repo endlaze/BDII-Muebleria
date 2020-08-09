@@ -7,13 +7,13 @@ const initialState = {
 const reducer = (state, action) => {
   switch(action.type) {
     case 'add-to-cart':
-      const found = state.cart.some(fur => fur.id === action.furniture.id)
+      const found = state.cart.some(fur => fur.codigoProducto === action.codigoProducto)
       return found ?  state : { cart: [...state.cart, {...action.furniture, quantity: 1}]};
     case 'delete-from-cart':
-      let filtered = state.cart.filter(function(value){ return value.id !== action.id;});
+      let filtered = state.cart.filter(function(value){ return value.codigoProducto !== action.id;});
       return {cart: filtered};
     case 'change-quantity':
-      let modified = state.cart.map((element) => element.id===action.id? {...element, quantity: action.quantity} : element )
+      let modified = state.cart.map((element) => element.codigoProducto===action.id? {...element, quantity: action.quantity} : element )
       return {cart: modified}
     case 'clear-cart':
       return {cart: []}

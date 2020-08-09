@@ -2,11 +2,9 @@ import React from 'react'
 import Header from '../components/Header'
 import ProductList from '../components/ProductList'
 import FurnitureForm from '../components/AddFurniture'
-import WorkplaceForm from '../components/AddWorkplace'
 import EmployeeForm from '../components/AddEmployee'
 import store from 'store'
 import Report from '../components/Report'
-import ComboForm from '../components/AddCombo'
 
 const Home = () => {
 	console.log(store.get('user'))
@@ -23,8 +21,6 @@ const Home = () => {
 				<>
 					<EmployeeForm/>
 					<FurnitureForm/>
-					<WorkplaceForm/>
-					<ComboForm/>
 					<Report branch={workplace.id}></Report>
 				</>
 				}

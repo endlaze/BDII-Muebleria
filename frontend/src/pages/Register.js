@@ -13,7 +13,6 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { FormControl, OutlinedInput, InputLabel, InputAdornment, IconButton } from '@material-ui/core';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import Address from '../components/AddAddress';
 import axios from 'axios'
 import { useHistory } from 'react-router-dom';
 import store from 'store'
@@ -52,13 +51,6 @@ export default function Register() {
 
   const [ showPassword, setShowPassword] = useState(false)
 
-  const [addressValues, setAddressValues] = useState({
-    country: '',
-    state: '',
-    address: '',
-    zipCode: ''
-  })
-
 
 
   const handleChange = (prop) => (event) => {
@@ -83,7 +75,7 @@ export default function Register() {
       birthdate: values.birthday
     }).then((res) => {
       store.set('user', res.data)
-      submitAddress(res.data.id)
+      history.replace('/login')
     })
   }
 
@@ -92,22 +84,10 @@ export default function Register() {
     for (const key in values) {
       valid = valid && values[key]
     }
-    for (const key in addressValues) {
-      valid = valid && addressValues[key]
-    }
     return valid !== '' && valid !== 0
   }
 
-  const submitAddress = (client_id) => {
-    axios.post('account/address/', {
-      state_id: addressValues.state,
-      zip_code: addressValues.zipCode,
-      address_line: addressValues.address,
-      client_id,
-    }).then((res) => {
-      history.replace('/login');
-    })
-  } 
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -213,7 +193,6 @@ export default function Register() {
               </FormControl>
             </Grid>
 
-            <Address setter={setAddressValues}></Address>
 
           </Grid>
           

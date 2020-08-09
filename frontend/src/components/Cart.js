@@ -36,7 +36,7 @@ const Cart = ({total, setTotal}) => {
   useEffect(() => {
     let tot = 0
     store.cart.forEach(product => {
-      tot += parseInt(product.selling_price) * parseInt(product.quantity)
+      tot += parseInt(product.precio) * parseInt(product.quantity)
     });
     setTotal(tot)
   }, [store])
@@ -54,21 +54,21 @@ const Cart = ({total, setTotal}) => {
         <TableBody>
           {store.cart.map((product, index) =>
             <TableRow key={index}>
-              <TableCell>{product.title}</TableCell>
-              <TableCell>{product.description}</TableCell>
+              <TableCell>{product.titulo}</TableCell>
+              <TableCell>{product.descripcion}</TableCell>
               <TableCell>
                 <TextField
                   InputProps={{ inputProps: { min: 1 } }}
                   type="number"
                   value={product.quantity}
-                  onChange={e => handleProductChange(e.target.value, product.id)}
+                  onChange={e => handleProductChange(e.target.value, product.codigoProducto)}
                   label="Cantidad" variant="outlined" className={classes.input} />
               </TableCell>
               <TableCell>
-                {parseInt(product.selling_price) * parseInt(product.quantity)}
+                {parseInt(product.precio) * parseInt(product.quantity)}
               </TableCell>
               <TableCell>
-                <Button onClick={() => dispatch({ type: 'delete-from-cart', id: product.id })}
+                <Button onClick={() => dispatch({ type: 'delete-from-cart', id: product.codigoProducto })}
                   variant="contained"
                   color="secondary"
                 >

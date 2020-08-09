@@ -29,6 +29,7 @@ const useStyles = makeStyles({
 const Product = ({title, description, price, available_quantity, product, selling_price, showModal, products}, props) => {
   const [store, dispatch] = useStore();
   const classes = useStyles();
+
   return (
     <Card className={classes.product} {...props}>
       <CardActionArea>
@@ -36,39 +37,29 @@ const Product = ({title, description, price, available_quantity, product, sellin
           component="img"
           alt={title}
           height="200"
-          image={product.picture || "https://politify.us/wp-content/uploads/2018/11/mesas-de-madera-para-comedor-arquitectura-casas.jpg"}
+          image={JSON.stringify(product.fp[0]) === '{}'? "https://politify.us/wp-content/uploads/2018/11/mesas-de-madera-para-comedor-arquitectura-casas.jpg" : product.fp[0].foto}
           title={title}
         />
         <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
-            {product.id}
+            {product.codigoProducto}
           </Typography>
           <Typography gutterBottom variant="h5" component="h2">
-            {title}
+            {product.titulo}
           </Typography>
-          {selling_price < price ? 
-          <div className={classes.flex}>
-            <Typography className={classes.priceBefore} gutterBottom variant="h5" component="h2">
-              {price}
-            </Typography>
-            <Typography color="secondary" gutterBottom variant="h5" component="h2">
-              {selling_price}
-            </Typography>
-          </div>
-          :
 
-            <Typography gutterBottom variant="h5" component="h2">
-              {price}
-            </Typography>
-
-          }
+          <Typography gutterBottom variant="h5" component="h2">
+            {product.precio}
+          </Typography>
           
           <Typography variant="body2" color="textSecondary" component="p">
-            {description}
+            {product.descripcion}
           </Typography>
-          <Typography variant="body2" component="p">
-            Cantidad disponible: {available_quantity}
+
+          <Typography variant="body2" color="textSecondary" component="p">
+            {product.detalle}
           </Typography>
+
           
         </CardContent>
       </CardActionArea>

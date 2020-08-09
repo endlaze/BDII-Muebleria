@@ -89,22 +89,47 @@ export default function Login( ) {
 
   function signIn () {
     
-    let { from } = location.state || { from: { pathname: "/" } };
-    axios.post('/account/auth/login/', {
-      username: values.username,
-      password: values.password,
-      login_type: values.login_type
+    if (values.login_type === 'client') {
+      clientLogin()
+    }
+    if (values.login_type === 'employee') {
+      employeeLogin()
+    }
+    
+  }
+
+  const clientLogin = () => {
+    axios.post('/client/auth/', {
+      cedulaCliente: values.username,
+      contrasena: values.password,
     }).then((data)=> {
-      if(JSON.stringify(data.data) !== JSON.stringify({})) {
-        store.set('user', {...data.data, login_type: values.login_type})
-        history.replace(from);
+      if(data.data.codigo === 200) {
+        applyUser({...data.data.cliente, login_type: values.login_type})
+        history.replace('/');
       } else {
         setSnack({ open: true, message: 'Contraseña o usuario incorrecto', severity: 'error' })
       }
 
     })
-    
+  }
 
+  const employeeLogin = () => {
+    axios.post('/employee/login/', {
+      cedulaEmpleado: values.username,
+      contrasena: values.password,
+    }).then((data)=> {
+      if(data.data.codigo === undefined) {
+        applyUser({...data.data[0], login_type: values.login_type})
+        history.replace('/');
+      } else {
+        setSnack({ open: true, message: 'Contraseña o usuario incorrecto', severity: 'error' })
+      }
+
+    })
+  }
+
+  const applyUser = (data) => {
+    store.set('user', data)
   }
 
   return (

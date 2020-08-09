@@ -27,19 +27,20 @@ export const newProduct = (req, res) => {
 export const allProducts = (req, res) => {
     const request = new Request('usp_obtenerProductos', err=> console.log(err));
     
-    request.addOutputParameter('response', TYPES.VarChar)
 
-    let response;
+    let response = '';
 
     request.on('doneProc', (rowCount, more, returnStatus, rows) => {
-        console.log(returnStatus)
-        console.log(response)
-        res.status(200).send({ response: response })
+        
+        res.status(200).send(JSON.parse(response))
     });
-  
-    request.on('returnValue', (parameterName, value, metadata) => {
-        if (parameterName === 'response') response = value
+
+    request.on("row", columns => { 
+        columns.forEach((column)=> {
+            response+= column.value;
+        })     
     });
+
     
     connection.callProcedure(request);
 } 
