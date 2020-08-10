@@ -37,7 +37,7 @@ const Product = ({title, description, price, available_quantity, product, sellin
           component="img"
           alt={title}
           height="200"
-          image={JSON.stringify(product.fp[0]) === '{}'? "https://politify.us/wp-content/uploads/2018/11/mesas-de-madera-para-comedor-arquitectura-casas.jpg" : product.fp[0].foto}
+          image={product.foto || "https://politify.us/wp-content/uploads/2018/11/mesas-de-madera-para-comedor-arquitectura-casas.jpg"}
           title={title}
         />
         <CardContent>
