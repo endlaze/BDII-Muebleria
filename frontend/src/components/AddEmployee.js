@@ -25,8 +25,7 @@ const Employee = () => {
   const [employeeTypes, setEmployeeTypes] = useState([])
   const [employeeType, setEmployeeType] = useState('')
 
-  const [worplaces, setWorkplaces] = useState([])
-  const [workplace, setWorkplace] = useState('')
+  const [workplace, setWorkplace] = useState()
 
   const [snack, setSnack] = useState({open: false, message: '', severity: ''})
 
@@ -37,47 +36,43 @@ const Employee = () => {
     setSnack({...snack, open: false});
   };
 
-  const username = useInput('')
-  const name = useInput('')
-  const lastName = useInput('')
-  const email = useInput('')
-  const password = useInput('')
-  const salary = useInput('')
-
+  const cedulaEmpleado = useInput('')
+  const nombre = useInput('')
+  const apellido1 = useInput('')
+  const apellido2 = useInput('')
+  const contrasena = useInput('')
+  const workplaces = ["Sucursal Alajuela", "Sucursal Cartago", "Sucursal Heredia"]
   
 
   useEffect(() => {
     getEmployeeTypes();
-    getWorkplaces();
-  }, [])
+  }, [workplace])
 
   const getEmployeeTypes = () => {
-    axios.get('/account/employee_type/').then((employeeTypes)=>{
-      setEmployeeTypes(employeeTypes.data)
-    })
-  }
-
-  const getWorkplaces = () => {
-    axios.get('/location/workplace/').then((workplaces)=>{
-      setWorkplaces(workplaces.data)
+    axios.post('/employee/type/', {
+      tipo: workplace? 'sucursal' : 'taller'
+    }).then((res)=>{
+      setEmployeeTypes(res.data)
+    }).catch(()=> {
+      console.log('No se pueden obtener los tipos de empleado')
     })
   }
 
   const submitEmployee = () => {
-    if(checkSalary()) {
-      axios.post('/account/employee/', {
-        username: username.value,
-        first_name: name.value,
-        last_name: lastName.value,
-        email: email.value,
-        password: password.value,
-        salary: salary.value,
-        emp_type_id: employeeType,
-        workplace_id: workplace
-      }).then(()=>{
-        setSnack({open: true, severity: 'success', message: 'Empleado creado.'})
-      })
-    }
+    axios.post('/account/employee/', {
+      cedulaEmpleado: cedulaEmpleado.value,
+      nombre: nombre.value,
+      apellido1: apellido1.value,
+      apellido2: apellido2.value,
+      contrasena: contrasena.value,
+      idTipoEmpleado: employeeType,
+      idSucursal: 1
+    }).then(()=>{
+      setSnack({open: true, severity: 'success', message: 'Empleado creado.'})
+    }).catch(()=>{
+      setSnack({open: true, severity: 'danger', message: 'Empleado no creado.'})
+    })
+    
   }
 
   const handleEmployeeTypeChange = (event) => {
@@ -89,78 +84,64 @@ const Employee = () => {
   }
 
   const validateForm = () => {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return (username.value && name.value && lastName.value &&
-      email.value && password.value && salary.value && re.test(String(email.value).toLowerCase())) || false
+    return (cedulaEmpleado.value && nombre.value && apellido1.value && apellido2.value || false)
   }
 
-  const checkSalary = () => {
-    if (employeeType) {
-      let {min_salary, max_salary} = employeeTypes.find((element) => element.id === employeeType)
-      if (parseInt(min_salary) <= parseInt(salary.value) && parseInt(salary.value) <= parseInt(max_salary)){
-        return true
-      }
-    }
-    setSnack({open: true, severity: 'error', message: 'El salario no es acorde al precio.'})
-    return false
-  }
 
   return(
     <Container>
       <Box className={classes.paper}>
           <Typography variant="h2">
             Agregar un empleado
-        </Typography>
-        </Box>
-    <div noValidate autoComplete="off">
-      <TextField label="Nombre" variant="outlined" {...name} className={classes.input}/>
-      <TextField label="Apellidos" variant="outlined" {...lastName} className={classes.input}/>
-      <TextField label="Nombre de usuario" variant="outlined" {...username}className={classes.input}/>
-      <TextField label="Email" variant="outlined" {...email} className={classes.input}/>
-      <TextField type="password" label="Contraseña" variant="outlined" {...password} className={classes.input}/>
-      <TextField label="Salario" variant="outlined" {...salary} className={classes.input}/>
-      <FormControl className={classes.input}>
-          <InputLabel>Tipo de empleado</InputLabel>
-          <Select
-            value={employeeType}
-            onChange={handleEmployeeTypeChange}
-          >  const [open, setOpen] = useState(false);
-
-            {employeeTypes.map((emT, index) =>
-              <MenuItem key={index} value={emT.id}>{emT.desc}</MenuItem>
-            )}
-          </Select>
-        </FormControl>
+          </Typography>
+      </Box>
+      <div noValidate autoComplete="off">
+        <TextField label="Nombre" variant="outlined" {...nombre} className={classes.input}/>
+        <TextField label="Primer apellido" variant="outlined" {...apellido1} className={classes.input}/>
+        <TextField label="Segundo apellido" variant="outlined" {...apellido2} className={classes.input}/>
+        <TextField label="Nombre de usuario" variant="outlined" {...cedulaEmpleado}className={classes.input}/>
+        <TextField type="password" label="Contraseña" variant="outlined" {...contrasena} className={classes.input}/>
         <FormControl className={classes.input}>
-          <InputLabel>Lugar de trabajo</InputLabel>
-          <Select
-            value={workplace}
-            onChange={handleWorkplaceChange}
+            <InputLabel>Tipo de empleado</InputLabel>
+            <Select
+              value={employeeType}
+              onChange={handleEmployeeTypeChange}
+            >
+
+              {employeeTypes.map((emT, index) =>
+                <MenuItem key={index} value={workplace?emT.idTipoEmpleadoSucursal:emT.idTipoEmpleadoTaller}>{emT.descripcion}</MenuItem>
+              )}
+            </Select>
+          </FormControl>
+          <FormControl className={classes.input}>
+            <InputLabel>Lugar de trabajo</InputLabel>
+            <Select
+              value={workplace}
+              onChange={handleWorkplaceChange}
+            >
+              <MenuItem value={null}>Taller</MenuItem>
+              {workplaces.map((wp, index) => 
+                <MenuItem key={index} value={index + 1}>{wp}</MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        
+      </div>
+      <div>
+      <Button onClick={() => submitEmployee()}
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            disabled={validateForm()? false : true}
           >
-            {worplaces.map((wp, index) => 
-              <MenuItem key={index} value={wp.id}>{wp.wp_type === 1? "Sucursal " : "Taller "}{wp.state.name}</MenuItem>
-            )}
-          </Select>
-        </FormControl>
-      
-    </div>
-    <div>
-    <Button onClick={() => submitEmployee()}
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          disabled={validateForm()? false : true}
-        >
-          Agregar empleado
-      </Button>
-    </div>
-    <Snackbar open={snack.open} autoHideDuration={6000} onClose={handleClose}>
-      <Alert onClose={handleClose} severity={snack.severity}>
-        {snack.message}
-      </Alert>
-    </Snackbar>
-    
-      
+            Agregar empleado
+        </Button>
+      </div>
+      <Snackbar open={snack.open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={snack.severity}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Container>
 
   );

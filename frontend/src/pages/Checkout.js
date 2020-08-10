@@ -3,7 +3,6 @@ import { Checkbox, Container, Typography, Paper, TextField, makeStyles, Button, 
 import { useStore } from '../Store'
 import axios from 'axios'
 import Cart from '../components/Cart';
-import AddressPicker from '../components/AddressPicker';
 import Payments from '../components/Payments'
 import browserStore from 'store'
 import { useHistory } from 'react-router-dom';
@@ -25,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
 const Checkout = () => {
   const classes = useStyles();
   const [store, dispatch] = useStore();
-  const [address, setAddress] = useState('')
   const email = useInput('')
   const name = useInput('')
   const [total, setTotal] = useState(0)
@@ -36,23 +34,24 @@ const Checkout = () => {
 
   const placeOrder = () => {
     const { cedulaCliente, login_type, idSucursal, cedulaEmpleado } = browserStore.get('user')
+
     if (login_type === 'client') {
-      axios.post('/order/online/', {
-        entrega: false,
+      axios.post('/order/new/online/', {
+        entrega: deliver,
         productos: store.cart.map((prod) => ({codigoProducto: prod.codigoProducto, cantidad: prod.quantity, precioCobrado: prod.precio})),
-        cedulaCliente: cedulaCliente
+        cedulaCliente: cedulaCliente,
+        idTipoPago: 1
       }).then((res)=> {
         dispatch({type: 'clear-cart'})
         history.replace('/orders');
       })
 
     } else {
-      axios.post('/order/onsite/', {
+      axios.post('/order/new/onsite/', {
         productos: store.cart.map((prod) => ({codigoProducto: prod.codigoProducto, cantidad: prod.quantity, precioCobrado: prod.precio})),
         cedulaEmpleado: cedulaEmpleado,
-        idSucursal: idSucursal,
-        client_id: name.value,
-        client_email: email.value,
+        idSucursal: idSucursal
+
       }).then((res)=> {
         dispatch({type: 'clear-cart'})
         history.replace('/orders');
@@ -60,8 +59,6 @@ const Checkout = () => {
     }
     
   }
-
-
 
   return (
     <>
@@ -78,12 +75,6 @@ const Checkout = () => {
               <>
                 <div className={classes.input}>
                   <Typography variant="subtitle1">
-                    Seleccione una direccion
-                  </Typography>
-                  <AddressPicker address={address} setter={setAddress}/>
-                </div>
-                <div className={classes.input}>
-                  <Typography variant="subtitle1">
                     Datos de tarjeta de credito
                   </Typography>
                   <TextField label="Número de tarjeta" variant="outlined" className={classes.input} />
@@ -91,7 +82,7 @@ const Checkout = () => {
                   <TextField label="CVV" variant="outlined" className={classes.input} />
                   <Checkbox
                     checked={deliver}
-                    onChange={setDeliver(!deliver)}
+                    onChange={()=>setDeliver(!deliver)}
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                   />
                 </div>

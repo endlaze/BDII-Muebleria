@@ -79,3 +79,28 @@ export const calculateSalary = (req, res) => {
 
   connection.callProcedure(request);
 }
+
+export const employeeTypes = (req, res) => {
+  let request;
+  if (req.body.tipo === 'sucursal') {
+    request = new Request('usp_obtenerTipoEmpleadoSucursal', err => {if (err) console.log(err)} )
+  } else {
+    request = new Request('usp_obtenerTipoEmpleadoTaller', err => {if (err) console.log(err)} )
+  } 
+
+  request.addParameter('json', TYPES.VarChar, JSON.stringify(req.body));
+  request.addOutputParameter('response', TYPES.VarChar);
+
+  let response;
+
+  request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+    console.log(returnStatus)
+      res.status(200).send(JSON.parse(response))
+  });
+
+  request.on('returnValue', (parameterName, value, metadata) => {
+    if (parameterName === 'response') response = value
+  });
+
+  connection.callProcedure(request);
+}

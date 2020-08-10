@@ -31,7 +31,7 @@ export const updateOrderState = (req, res) => {
 export const newOnlineOrder = (req, res) => {
 
     const request = new Request('usp_insertarOrdenOnline', err => console.log(err));
-    request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
     request.addOutputParameter('response', TYPES.VarChar)
     
     let response = {}
@@ -52,7 +52,7 @@ export const newOnlineOrder = (req, res) => {
 export const newOnsiteOrder = (req, res) => {
 
     const request = new Request('usp_insertarOrdenPresencial', err => console.log(err));
-    request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
     request.addOutputParameter('response', TYPES.VarChar)
 
     let response = {}
