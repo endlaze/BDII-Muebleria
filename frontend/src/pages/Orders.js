@@ -59,9 +59,10 @@ const Orders = () => {
 
   const getOrders = (route) => {
     const { cedulaCliente } = store.get('user')
+    console.log(cedulaCliente)
 
-    axios.post(route).then((res) => {
-    
+    axios.post(route,{ cedulaCliente}).then((res) => {
+      console.log(res.data)
       setState({ ...state, orders: res.data })
     })
   }
@@ -84,12 +85,16 @@ const Orders = () => {
     setSnack({ ...snack, open: false });
   };
 
-  const validateConfirmOrder = (orderId, orderIndex) => (state.orders[orderIndex].delivery.status === 3)
+  const validateConfirmOrder = (orderId, orderIndex) => (true)
 
-  const confirmOrder = (orderId, orderIndex) => {
-    axios.patch(`/order/delivery/${orderId}/`, { status: 3 }).then((res) => {
+  const confirmOrder = (consecutivo,idSucursal, orderIndex) => {
+    axios.patch(`/order/update_state/`, { 
+      consecutivo,
+      idSucursal,
+      nuevoEstadoOrden: 1
+    }).then((res) => {
       let orders = state.orders
-      orders[orderIndex].delivery = res.data
+      //orders[orderIndex].delivery = res.data
       setState({ ...state, orders })
     })
   }
@@ -104,33 +109,41 @@ const Orders = () => {
       {state.orders.map((order, index) =>
         <Paper key={index} className={classes.order}>
           <Typography variant="h4">
-            Orden #{order.id}
+            Orden #{order.consecutivo}
           </Typography>
           <Typography className={classes.dateLabel}>
-            <span className={classes.fontBold}>Fecha de compra: </span> {new Date(order.date).toLocaleDateString()}
+            <span className={classes.fontBold}>Fecha de compra: </span> {new Date(order.fecha).toLocaleDateString()}
            &nbsp;&nbsp;-&nbsp;&nbsp;
-           <span className={classes.fontBold}>Hora: </span> {`${new Date(order.date).getHours()}:${new Date(order.date).getMinutes()}:${new Date(order.date).getSeconds()}`}
+           <span className={classes.fontBold}>Hora: </span> {`${new Date(order.fecha).getHours()}:${new Date(order.fecha).getMinutes()}:${new Date(order.fecha).getSeconds()}`}
           </Typography>
+          {/*
           <Typography className={classes.dateLabel}>
-            <span className={classes.fontBold}>Fecha estimada de entrega: </span> {new Date(order.delivery.delivery_date).toLocaleDateString()}
+            <span className={classes.fontBold}>Fecha estimada de entrega: </span> {new Date(order.date).toLocaleDateString()}
           </Typography>
           <Typography className={classes.dateLabel}>
             <span className={classes.fontBold}>Estado de la orden: </span> {order.delivery.status_caption}
-          </Typography>
+          </Typography>*/}
           <Button variant="contained" color="primary" onClick={() => confirmOrder(order.id, index)} disabled={validateConfirmOrder(order.id, index)}>Confirmar recibido</Button>
           <Grid container >
-            {order.ord_products.map((prod, key) =>
+            {order.productos.map((prod, key) =>
               <Grid className={classes.product} item key={key}>
-                <img src={prod.product.picture} className={classes.prodImg}></img>
-                <Typography><span className={classes.fontBold}>Producto: </span> {prod.product.title}</Typography>
-                <Typography><span className={classes.fontBold}>Cantidad comprada: </span> {prod.quantity}</Typography>
-                <Typography><span className={classes.fontBold}>Cantidad en backorder: </span>{prod.backorder_quantity * -1}</Typography>
+                {/*<img src={prod.product.picture} className={classes.prodImg}></img>*/}
+                <Typography><span className={classes.fontBold}>Producto: </span> {prod.titulo}</Typography>
+                <Typography><span className={classes.fontBold}>Cantidad comprada: </span> {prod.cantidad}</Typography>
+                {/*<Typography><span className={classes.fontBold}>Cantidad en backorder: </span>{prod.backorder_quantity * -1}</Typography>*/}
                 <Button variant="contained" className={classes.reviewBTN} onClick={() => changeModalState(prod.id, order.id)}>Calificar producto</Button>
               </Grid>
             )}
           </Grid>
         </Paper>
       )}
+      {state.orders.length > 0 ? null :
+        <Box className={classes.paper}>
+          <Typography variant="h4">
+            No hay ordenes que mostrar
+          </Typography>
+        </Box>
+      }
       <Snackbar open={snack.open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={snack.severity}>
           {snack.message}
