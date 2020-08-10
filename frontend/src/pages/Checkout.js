@@ -40,7 +40,9 @@ const Checkout = () => {
         entrega: deliver,
         productos: store.cart.map((prod) => ({codigoProducto: prod.codigoProducto, cantidad: prod.quantity, precioCobrado: prod.precio})),
         cedulaCliente: cedulaCliente,
-        idTipoPago: 1
+        idTipoPago: 1,
+        cupon: '',
+        descuento: 0
       }).then((res)=> {
         dispatch({type: 'clear-cart'})
         history.replace('/orders');
@@ -50,8 +52,11 @@ const Checkout = () => {
       axios.post('/order/new/onsite/', {
         productos: store.cart.map((prod) => ({codigoProducto: prod.codigoProducto, cantidad: prod.quantity, precioCobrado: prod.precio})),
         cedulaEmpleado: cedulaEmpleado,
-        idSucursal: idSucursal
-
+        cedulaCliente: 11111111,
+        idSucursal: idSucursal,
+        idTipoPago: 1,
+        cupon: '',
+        descuento: 0
       }).then((res)=> {
         dispatch({type: 'clear-cart'})
         history.replace('/orders');
