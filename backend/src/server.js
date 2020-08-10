@@ -8,7 +8,7 @@ server.listen(5000, () => {
   console.log('App listening on port 5000');
 });
 
-server.use(bodyParser.json());
+server.use(bodyParser.json(({ limit:'1000mb' })));
 
 server.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', "*");
