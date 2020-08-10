@@ -151,7 +151,7 @@ export default function Login( ) {
               required
               fullWidth
               id="username"
-              label="Nombre de usuario"
+              label="Cedula"
               name="username"
               autoComplete="username"
               autoFocus

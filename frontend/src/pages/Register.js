@@ -41,11 +41,11 @@ export default function Register() {
   let history = useHistory()
   const classes = useStyles();
   const [values, setValues] = useState({
+    id: '',
     firstName: '',
-    lastName: '',
-    email: '',
+    lastName1: '',
+    lastName2: '',
     password: '',
-    username: '',
     birthday: ''
   });
 
@@ -66,13 +66,13 @@ export default function Register() {
   };
 
   const submitClient = () => {
-    axios.post('account/client/', {
-      username: values.username,
-      first_name: values.firstName,
-      last_name: values.lastName,
-      email: values.email,
-      password: values.password,
-      birthdate: values.birthday
+    axios.post('client/create/', {
+      cedulaCliente: values.id,
+      nombre: values.firstName,
+      apellido1: values.lastName1,
+      apellido2: values.lastName2,
+      fechaNacimiento: values.birthdate,
+      contrasena: values.password,
     }).then((res) => {
       store.set('user', res.data)
       history.replace('/login')
@@ -120,11 +120,21 @@ export default function Register() {
                 required
                 fullWidth
                 id="lastName"
-                label="Apellidos"
+                label="Primer apellido"
                 name="lastName"
                 autoComplete="lname"
-                value={values.lastName}
-                onChange={handleChange('lastName')}
+                value={values.lastName1}
+                onChange={handleChange('lastName1')}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                label="Segundo apellido"
+                value={values.lastName2}
+                onChange={handleChange('lastName2')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -133,10 +143,9 @@ export default function Register() {
                 required
                 fullWidth
                 id="username"
-                label="Nombre de usuario"
-                name="username"
-                value={values.username}
-                onChange={handleChange('username')}
+                label="Identificacion"
+                value={values.id}
+                onChange={handleChange('id')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -144,24 +153,11 @@ export default function Register() {
                 variant="outlined"
                 required
                 fullWidth
-                id="email"
-                label="Email"
-                name="email"
-                autoComplete="email"
-                value={values.email}
-                onChange={handleChange('email')}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="birthday"
+                id="birthdate"
                 label="Fecha de nacimiento aaaa/mm/dd"
-                name="birthday"
-                value={values.birthday}
-                onChange={handleChange('birthday')}
+                name="birthdate"
+                value={values.birthdate}
+                onChange={handleChange('birthdate')}
               />
             </Grid>
             <Grid item xs={12}>

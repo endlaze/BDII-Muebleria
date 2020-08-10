@@ -54,15 +54,15 @@ const Orders = () => {
   const [snack, setSnack] = useState({ open: false, message: '', severity: '' })
 
   useEffect(() => {
-    getOrders('/order/online/')
+    getOrders('/order/all/')
   }, [])
 
   const getOrders = (route) => {
-    const { id } = store.get('user')
+    const { cedulaCliente } = store.get('user')
 
-    axios.get(route).then((res) => {
-      const orders = res.data.filter((order) => { return parseInt(order.client) === parseInt(id) })
-      setState({ ...state, orders })
+    axios.post(route).then((res) => {
+    
+      setState({ ...state, orders: res.data })
     })
   }
 
