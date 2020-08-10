@@ -106,10 +106,9 @@ export default function Login( ) {
       if(data.data.codigo === 200) {
         applyUser({...data.data.cliente, login_type: values.login_type})
         history.replace('/');
-      } else {
-        setSnack({ open: true, message: 'Contraseña o usuario incorrecto', severity: 'error' })
-      }
-
+      } 
+    }).catch(()=> {
+      setSnack({ open: true, message: 'Contraseña o usuario incorrecto', severity: 'error' })
     })
   }
 
@@ -123,8 +122,9 @@ export default function Login( ) {
         history.replace('/');
       } else {
         setSnack({ open: true, message: 'Contraseña o usuario incorrecto', severity: 'error' })
-      }
-
+      } 
+    }).catch(()=> {
+      setSnack({ open: true, message: 'Contraseña o usuario incorrecto', severity: 'error' })
     })
   }
 
@@ -151,7 +151,7 @@ export default function Login( ) {
               required
               fullWidth
               id="username"
-              label="Nombre de usuario"
+              label="Cedula"
               name="username"
               autoComplete="username"
               autoFocus

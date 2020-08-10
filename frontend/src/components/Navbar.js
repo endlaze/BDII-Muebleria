@@ -26,7 +26,8 @@ const useStyles = makeStyles((theme) => ({
   link: {
     textDecoration: 'none',
     flexGrow: 1,
-    color: 'white'
+    color: 'white',
+    margin: theme.spacing(0, 1)
   }
 }));
 
@@ -51,6 +52,11 @@ const AppNavbar = () => {
           <Typography  variant="h6" >
             MueblesTEC
           </Typography>
+          </Link>
+          <Link to="/orders">
+          <Typography className={classes.link} variant="h6" >
+            Ordenes
+          </Typography> 
           </Link>
           <Link to="/checkout">
           <Typography className={classes.link} variant="h6" >

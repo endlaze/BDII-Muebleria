@@ -31,7 +31,7 @@ export const updateOrderState = (req, res) => {
 export const newOnlineOrder = (req, res) => {
 
     const request = new Request('usp_insertarOrdenOnline', err => console.log(err));
-    request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
     request.addOutputParameter('response', TYPES.VarChar)
     
     let response = {}
@@ -52,7 +52,7 @@ export const newOnlineOrder = (req, res) => {
 export const newOnsiteOrder = (req, res) => {
 
     const request = new Request('usp_insertarOrdenPresencial', err => console.log(err));
-    request.addParameter('producto', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
     request.addOutputParameter('response', TYPES.VarChar)
 
     let response = {}
@@ -61,6 +61,27 @@ export const newOnsiteOrder = (req, res) => {
         console.log(returnStatus)
         console.log(response)
         res.status(200).send(response)
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
+}
+
+export const getClientOrders = (req, res) => {
+
+    const request = new Request('usp_obtenerOrdenes', err => console.log(err));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addOutputParameter('response', TYPES.VarChar)
+
+    let response = []
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        console.log(returnStatus)
+        console.log(response)
+        res.status(200).send(JSON.parse(response))
     });
   
     request.on('returnValue', (parameterName, value, metadata) => {
