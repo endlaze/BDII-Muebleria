@@ -7,6 +7,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button } from '@material-ui/core';
 import axios from 'axios'
 import ShowProduct from './ShowProduct';
+import store from 'store'
+import ShowSalary from './ShowSalary'
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 const useStyles = makeStyles({
   productContainer: {
@@ -15,14 +18,26 @@ const useStyles = makeStyles({
   product: {
     margin: 'auto',
     marginTop: '20px'
-  }
+  },
+  salaryBtn: {
+    float: 'right',
+    margin: 20
+  },
+  mtSpacing: {
+	  marginTop: 40,
+	}
 })
 
+
+
 const ProductList = () => {
+
+  const [salaryModal, setSalaryModal] = useState(false)
   const classes = useStyles();
   const [furnitures, setFurnitures] = useState([])
   const [products, setProducts] = useState([])
   const [modal, setModal] = useState(false)
+  const { idTipoEmpleado } = store.get('user')
 
   useEffect(() => {
     axios.get('/product/all/').then((res) => {
@@ -32,7 +47,9 @@ const ProductList = () => {
     })
   }, [])
 
-
+  const changeSalaryModalState = () => {
+    setSalaryModal(!salaryModal)
+  }
 
   // const applyDiscounts = (setter, stockList) => {
   //   setter(stockList.map((furniture) => { 
@@ -68,6 +85,15 @@ const ProductList = () => {
   return(
     <>
       <Container className={classes.productContainer}>
+      {((idTipoEmpleado !== undefined) && (idTipoEmpleado === 1)) ?
+          <Button
+            className={classes.salaryBtn}
+            onClick={() => changeSalaryModalState()}
+            variant="contained"
+            color="primary"
+            startIcon={<AttachMoneyIcon />}>
+            Ver salario
+        </Button> : null}
         <Typography variant="h2" gutterBottom> Nuestros productos</Typography>
         <Box display="flex" flexWrap="wrap" justifyContent="center" className={classes.productContainer}>
           {furnitures.map((product, index) =>
@@ -75,6 +101,7 @@ const ProductList = () => {
           )}
         </Box>
         <ShowProduct closeModal={closeModal} show={modal} products={products}/>
+        <ShowSalary closeModal ={changeSalaryModalState} show={salaryModal}/>
       </Container>
     </>
     

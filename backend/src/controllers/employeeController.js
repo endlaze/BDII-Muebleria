@@ -69,7 +69,6 @@ export const calculateSalary = (req, res) => {
   let response;
 
   request.on('doneProc', (rowCount, more, returnStatus, rows) => {
-    console.log(returnStatus)
       res.status(200).send(JSON.parse(response))
   });
 
