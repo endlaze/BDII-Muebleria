@@ -69,22 +69,17 @@ const Orders = () => {
 
   const getOrders = (route) => {
     const { cedulaCliente } = store.get('user')
-    console.log(cedulaCliente)
 
-    if(route === '/order/all/online'){
-      axios.post(route,{ cedulaCliente: cedulaCliente}).then((res) => {
-        console.log(res.data)
+    if (route === '/order/all/online') {
+      axios.post(route, { cedulaCliente: cedulaCliente }).then((res) => {
         setOnlineOrders(res.data)
         getOrders('/order/all/onsite')
       })
-    } else if(route === '/order/all/onsite'){
-      axios.post(route,{ cedulaCliente: cedulaCliente}).then((res) => {
-        console.log(res.data)
+    } else if (route === '/order/all/onsite') {
+      axios.post(route, { cedulaCliente: cedulaCliente }).then((res) => {
         setOnSiteOrders(res.data)
       })
     }
-
-    
   }
 
   const changeModalState = (idProd, orderNum) => {
@@ -107,9 +102,9 @@ const Orders = () => {
 
   const validateConfirmOrder = (orderId, orderIndex) => {
     let order = onlineOrders[orderIndex]
-    if(order.hasOwnProperty('entrega')){
-        return order.entrega.idEstadoOrden === 1
-    }else{
+    if (order.hasOwnProperty('entrega')) {
+      return order.entrega.idEstadoOrden === 1
+    } else {
       return true
     }
   }
@@ -118,8 +113,9 @@ const Orders = () => {
     return onlineOrders.length > 0 && onsiteOrders.length > 0
   }
 
-  const confirmOrder = (consecutivo,idSucursal, orderIndex) => {
-    axios.patch(`/order/update_state/`, { 
+  const confirmOrder = (consecutivo, idSucursal, orderIndex) => {
+
+    axios.patch(`/order/update_state/`, {
       consecutivo,
       idSucursal,
       nuevoEstadoOrden: 2
@@ -141,20 +137,20 @@ const Orders = () => {
         <Paper key={index} className={classes.order}>
           <Typography variant="h4" className={classes.orderTitle}>
             Orden #{order.consecutivo}
-            <Chip label="Online" color="primary" className={classes.chip}/>
+            <Chip label="Online" color="primary" className={classes.chip} />
           </Typography>
           <Typography className={classes.dateLabel}>
             <span className={classes.fontBold}>Fecha de compra: </span> {new Date(order.fecha).toLocaleDateString()}
            &nbsp;&nbsp;&nbsp;&nbsp;
           </Typography>
           {order.hasOwnProperty('entrega') ? <div>
-          <Typography className={classes.dateLabel}>
-            <span className={classes.fontBold}>Fecha estimada de entrega: </span> {new Date(order.entrega.fechaEstimada).toLocaleDateString()}
-          </Typography>
-          <Typography className={classes.dateLabel}>
-            <span className={classes.fontBold}>Estado de la orden: </span> {order.entrega.idEstadoOrden}
-          </Typography></div> : null}
-          <Button style={{marginLeft:'10px'}}variant="contained" color="primary" onClick={() => confirmOrder(order.id, index)} disabled={validateConfirmOrder(order.id, index)}>Confirmar recibido</Button>
+            <Typography className={classes.dateLabel}>
+              <span className={classes.fontBold}>Fecha estimada de entrega: </span> {new Date(order.entrega.fechaEstimada).toLocaleDateString()}
+            </Typography>
+            <Typography className={classes.dateLabel}>
+              <span className={classes.fontBold}>Estado de la orden: </span> {order.entrega.idEstadoOrden}
+            </Typography></div> : null}
+          <Button style={{ marginLeft: '10px' }} variant="contained" color="primary" onClick={() => confirmOrder(order.consecutivo, index)} disabled={validateConfirmOrder(order.consecutivo, index)}>Confirmar recibido</Button>
           <Grid container >
             {order.productos.map((prod, key) =>
               <Grid className={classes.product} item key={key}>
@@ -162,7 +158,7 @@ const Orders = () => {
                 <Typography><span className={classes.fontBold}>Producto: </span> {prod.titulo}</Typography>
                 <Typography><span className={classes.fontBold}>Cantidad comprada: </span> {prod.cantidad}</Typography>
                 {/*<Typography><span className={classes.fontBold}>Cantidad en backorder: </span>{prod.backorder_quantity * -1}</Typography>*/}
-                <Button variant="contained" className={classes.reviewBTN} onClick={() => changeModalState(prod.id, order.id)}>Calificar producto</Button>
+                <Button variant="contained" className={classes.reviewBTN} onClick={() => changeModalState(prod.codigoProducto, order.consecutivo)}>Calificar producto</Button>
               </Grid>
             )}
           </Grid>
@@ -172,7 +168,7 @@ const Orders = () => {
         <Paper key={index} className={classes.order}>
           <Typography variant="h4" className={classes.orderTitle}>
             Orden #{order.consecutivo}
-            <Chip label="Presencial" color="primary" className={classes.chip}/>
+            <Chip label="Presencial" color="primary" className={classes.chip} />
           </Typography>
           <Typography className={classes.dateLabel}>
             <span className={classes.fontBold}>Fecha de compra: </span> {new Date(order.fecha).toLocaleDateString()}
@@ -185,13 +181,13 @@ const Orders = () => {
                 <Typography><span className={classes.fontBold}>Producto: </span> {prod.titulo}</Typography>
                 <Typography><span className={classes.fontBold}>Cantidad comprada: </span> {prod.cantidad}</Typography>
                 {/*<Typography><span className={classes.fontBold}>Cantidad en backorder: </span>{prod.backorder_quantity * -1}</Typography>*/}
-                <Button variant="contained" className={classes.reviewBTN} onClick={() => changeModalState(prod.id, order.id)}>Calificar producto</Button>
+                <Button variant="contained" className={classes.reviewBTN} onClick={() => changeModalState(prod.codigoProducto, order.consecutivo)}>Calificar producto</Button>
               </Grid>
             )}
           </Grid>
         </Paper>
       )}
-      { emptyOrders ? null :
+      {emptyOrders ? null :
         <Box className={classes.paper}>
           <Typography variant="h4">
             No hay ordenes que mostrar
