@@ -70,6 +70,46 @@ export const newOnsiteOrder = (req, res) => {
     connection.callProcedure(request);
 }
 
+export const getClientOnlineOrders = (req, res) => {
+    const request = new Request('usp_obtenerOrdenesOnline', err => console.log(err));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addOutputParameter('response', TYPES.VarChar)
+
+    let response = []
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        console.log(returnStatus)
+        console.log(response)
+        res.status(200).send(JSON.parse(response))
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
+}
+
+export const getClientOnSiteOrders = (req, res) => {
+    const request = new Request('usp_obtenerOrdenesPresenciales', err => console.log(err));
+    request.addParameter('json', TYPES.NVarChar, JSON.stringify(req.body));
+    request.addOutputParameter('response', TYPES.VarChar)
+
+    let response = []
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        console.log(returnStatus)
+        console.log(response)
+        res.status(200).send(JSON.parse(response))
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
+}
+
 export const getClientOrders = (req, res) => {
 
     const request = new Request('usp_obtenerOrdenes', err => console.log(err));
