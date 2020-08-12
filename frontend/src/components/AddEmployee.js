@@ -66,7 +66,7 @@ const Employee = () => {
       apellido2: apellido2.value,
       contrasena: contrasena.value,
       idTipoEmpleado: employeeType,
-      idSucursal: 1
+      idSucursal: workplace
     }).then(()=>{
       setSnack({open: true, severity: 'success', message: 'Empleado creado.'})
     }).catch(()=>{

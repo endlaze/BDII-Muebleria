@@ -17,6 +17,10 @@ const reducer = (state, action) => {
       return {cart: modified}
     case 'clear-cart':
       return {cart: []}
+    case 'apply-discount':
+      console.log(action.discount)
+      let discounted = state.cart.map((element)=> ({...element, precio: element.precio * (1- parseFloat(action.discount))} ))
+      return {cart: discounted}
     default:
       return state
     

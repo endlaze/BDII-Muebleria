@@ -90,3 +90,22 @@ export const getClientOrders = (req, res) => {
 
     connection.callProcedure(request);
 }
+
+
+export const getPaymentTypes = (req, res) => {
+
+    const request = new Request('usp_obtenerTipoPago', err => console.log(err));
+    request.addOutputParameter('response', TYPES.VarChar)
+
+    let response = []
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        res.status(200).send(JSON.parse(response))
+    });
+  
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
+}

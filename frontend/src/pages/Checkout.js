@@ -6,6 +6,7 @@ import Cart from '../components/Cart';
 import Payments from '../components/Payments'
 import browserStore from 'store'
 import { useHistory } from 'react-router-dom';
+import Coupon from '../components/Coupon'
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -22,27 +23,29 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Checkout = () => {
+
+  const { cedulaCliente, login_type, idSucursal, cedulaEmpleado } = browserStore.get('user')
   const classes = useStyles();
   const [store, dispatch] = useStore();
-  const email = useInput('')
-  const name = useInput('')
   const [total, setTotal] = useState(0)
   const [deliver, setDeliver] = useState(false)
+  const coupon = useState('')
+  const discount = useState('')
+  const [id, setId] = useState(cedulaCliente)
+  const payment = useState(0)
 
-  const {login_type} = browserStore.get('user')
   let history = useHistory();
 
   const placeOrder = () => {
-    const { cedulaCliente, login_type, idSucursal, cedulaEmpleado } = browserStore.get('user')
 
     if (login_type === 'client') {
       axios.post('/order/new/online/', {
         entrega: deliver,
         productos: store.cart.map((prod) => ({codigoProducto: prod.codigoProducto, cantidad: prod.quantity, precioCobrado: prod.precio})),
         cedulaCliente: cedulaCliente,
-        idTipoPago: 1,
-        cupon: '',
-        descuento: 0
+        idTipoPago: payment[0],
+        cupon: coupon[0],
+        descuento: discount[0]
       }).then((res)=> {
         dispatch({type: 'clear-cart'})
         history.replace('/orders');
@@ -52,11 +55,11 @@ const Checkout = () => {
       axios.post('/order/new/onsite/', {
         productos: store.cart.map((prod) => ({codigoProducto: prod.codigoProducto, cantidad: prod.quantity, precioCobrado: prod.precio})),
         cedulaEmpleado: cedulaEmpleado,
-        cedulaCliente: 11111111,
+        cedulaCliente: id,
         idSucursal: idSucursal,
-        idTipoPago: 1,
-        cupon: '',
-        descuento: 0
+        idTipoPago: payment[0],
+        cupon: coupon[0],
+        descuento: discount[0]
       }).then((res)=> {
         dispatch({type: 'clear-cart'})
         history.replace('/orders');
@@ -79,12 +82,7 @@ const Checkout = () => {
             {login_type === 'client' ? 
               <>
                 <div className={classes.input}>
-                  <Typography variant="subtitle1">
-                    Datos de tarjeta de credito
-                  </Typography>
-                  <TextField label="Número de tarjeta" variant="outlined" className={classes.input} />
-                  <TextField label="Fecha de vencimiento" variant="outlined" className={classes.input} />
-                  <TextField label="CVV" variant="outlined" className={classes.input} />
+                  <Typography>¿Desea incluir transporte?</Typography>
                   <Checkbox
                     checked={deliver}
                     onChange={()=>setDeliver(!deliver)}
@@ -95,19 +93,16 @@ const Checkout = () => {
               :
               <>
                 <div className={classes.input}>
-                  <Typography variant="subtitle1">
-                    Forma de pago
-                  </Typography>
-                  <TextField {...name} label="Nombre de cliente" variant="outlined" className={classes.input} />
-                  <TextField {...email} label="Email del cliente" variant="outlined" className={classes.input} />
+                <Typography>Cedula del cliente</Typography>
+                  <TextField value={id} onChange={(e)=>setId(e.target.value)}></TextField>
                 </div>
-                
-                <div className={classes.input}>
-                  <Payments/>
-                </div>
-                
+
               </>
             }
+            <div>
+              <Payments payment={payment}/>
+            </div>
+            <Coupon cedulaCliente={cedulaCliente || id} coupon={coupon} discount={discount}></Coupon>
             
             <div>
               <Button variant="contained" color="primary" onClick={()=> placeOrder()}>
@@ -115,7 +110,7 @@ const Checkout = () => {
               </Button>
             </div>
           </div>
-          :
+        :
           <Box className={classes.paper}>
             <Typography variant="h4">
               Su carrito esta vacio
