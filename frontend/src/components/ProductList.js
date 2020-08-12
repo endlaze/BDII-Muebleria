@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import Furniture from './ShowProduct'
 import Product from './Product'
 import Typography from '@material-ui/core/Typography';
@@ -24,8 +24,8 @@ const useStyles = makeStyles({
     margin: 20
   },
   mtSpacing: {
-	  marginTop: 40,
-	}
+    marginTop: 40,
+  }
 })
 
 
@@ -35,14 +35,14 @@ const ProductList = () => {
   const [salaryModal, setSalaryModal] = useState(false)
   const classes = useStyles();
   const [furnitures, setFurnitures] = useState([])
-  const [products, setProducts] = useState([])
+  const [product, setProduct] = useState([])
   const [modal, setModal] = useState(false)
   const { idTipoEmpleado } = store.get('user')
 
   useEffect(() => {
     axios.get('/product/all/').then((res) => {
       setFurnitures(res.data)
-    }).catch((error)=> {
+    }).catch((error) => {
       console.log(error)
     })
   }, [])
@@ -73,8 +73,8 @@ const ProductList = () => {
 
   // }
 
-  const showModal = (products) => {
-    setProducts(products)
+  const showModal = (product) => {
+    setProduct(product)
     setModal(true)
   }
 
@@ -82,10 +82,10 @@ const ProductList = () => {
     setModal(false)
   }
 
-  return(
+  return (
     <>
       <Container className={classes.productContainer}>
-      {((idTipoEmpleado !== undefined) && (idTipoEmpleado === 1)) ?
+        {((idTipoEmpleado !== undefined) && (idTipoEmpleado === 1)) ?
           <Button
             className={classes.salaryBtn}
             onClick={() => changeSalaryModalState()}
@@ -100,11 +100,11 @@ const ProductList = () => {
             <Product showModal={showModal} key={index} {...product} product={product} ></Product>
           )}
         </Box>
-        <ShowProduct closeModal={closeModal} show={modal} products={products}/>
-        <ShowSalary closeModal ={changeSalaryModalState} show={salaryModal}/>
+        <ShowProduct closeModal={closeModal} show={modal} product={product} />
+        <ShowSalary closeModal={changeSalaryModalState} show={salaryModal} />
       </Container>
     </>
-    
+
   );
 }
 

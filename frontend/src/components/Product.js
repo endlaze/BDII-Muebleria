@@ -71,7 +71,7 @@ const Product = ({title, description, price, available_quantity, product, sellin
         startIcon={<AddShoppingCart/>}>
           Agregar al carrito
         </Button>
-        <Button onClick={()=> showModal(products)}>Hola</Button>
+        <Button onClick={()=> showModal(product)}>Detalles</Button>
       </CardActions>
     </Card>
   );

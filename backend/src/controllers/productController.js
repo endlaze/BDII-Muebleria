@@ -41,4 +41,50 @@ export const allProducts = (req, res) => {
 
 
     connection.callProcedure(request);
+}
+
+
+export const addReview = (req, res) => {
+    const request = new Request('usp_insertarResena', err => console.log(err));
+
+    let reqData = req.body
+    console.log(reqData)
+    request.addParameter('consecutivo', TYPES.Int, reqData.consecutivo);
+    request.addParameter('codigoProducto', TYPES.Int, reqData.codigoProducto);
+    request.addParameter('puntuacion', TYPES.Float, reqData.puntuacion);
+    request.addParameter('comentario', TYPES.VarChar, reqData.comentario);
+    request.addOutputParameter('response', TYPES.VarChar);
+
+    let response = {}
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        res.status(200).send(JSON.parse(response))
+    });
+
+    request.on('returnValue', (parameterName, value, metadata) => {
+        console.log(value)
+        if (parameterName === 'response') response = value
+    });
+    connection.callProcedure(request);
+}
+
+export const getProdReviews = (req, res) => {
+    const request = new Request('usp_obtenerResenas', err => console.log(err));
+
+    let reqData = req.body
+
+    request.addParameter('codigoProducto', TYPES.Int, reqData.codigoProducto);
+    request.addOutputParameter('response', TYPES.VarChar);
+
+    let response = {}
+
+    request.on('doneProc', (rowCount, more, returnStatus, rows) => {
+        res.status(200).send(JSON.parse(response))
+    });
+
+    request.on('returnValue', (parameterName, value, metadata) => {
+        if (parameterName === 'response') response = value
+    });
+
+    connection.callProcedure(request);
 } 
