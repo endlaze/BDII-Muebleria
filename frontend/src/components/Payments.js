@@ -14,29 +14,58 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-
+  credit: {
+    marginRight: '10px'
+  }
 }));
 
-const Payments = () => {
+const Payments = ({payment}) => {
   const classes = useStyles();
+  const [payments, setPayments] = useState([])
+  const [pay, setPay] = payment;
+
+  useEffect(()=> {
+    getPaymetTypes()
+  },[])
+
+  const getPaymetTypes = () => {
+    axios.get('order/payment-types/').then((res) => {
+      setPayments(res.data)
+    }).catch((err)=> {
+      console.log(err)
+    })
+  }
 
   return (
     <>
+      <div>
         <div>
-          <div>
-            <Typography variant="subtitle1">
-              Forma de pago
-            </Typography>
-            <FormControl className={classes.input}>
-              <InputLabel>Metodo de pago</InputLabel>
-              <Select>
-                <MenuItem value={1}>Efectivo</MenuItem>
-                <MenuItem value={2}>Tarjeta</MenuItem>
-                <MenuItem value={3}>Deposito</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
+          <FormControl className={classes.input}>
+            <Typography>Metodo de pago</Typography>
+            <Select
+              value={pay}
+              onChange={(e) => setPay(e.target.value)}
+            >
+              {payments.map((p) => 
+                <MenuItem key={p.idTipoPago} value={p.idTipoPago}>{p.descripcion}</MenuItem>
+              )}
+            </Select>
+          </FormControl>
+          {pay === 1 ? 
+            <div className={classes.input}>
+              <Typography variant="subtitle1">
+              Datos de tarjeta de credito
+              </Typography>
+              <TextField className={classes.credit} label="Número de tarjeta" variant="outlined"  />
+              <TextField className={classes.credit} label="Fecha de vencimiento" variant="outlined"  />
+              <TextField className={classes.credit} label="CVV" variant="outlined"  />
+            </div>
+          :
+            <>
+            </>
+          }
         </div>
+      </div>
     </>
   );
 }
