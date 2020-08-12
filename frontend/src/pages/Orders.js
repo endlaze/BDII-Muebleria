@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, Typography, Container, makeStyles, Box, Paper, Button, Snackbar } from '@material-ui/core'
+import { Grid, Typography, Container, makeStyles, Box, Paper, Button, Snackbar, Chip } from '@material-ui/core'
 import store from 'store'
 import axios from 'axios'
 import AddReviewModal from '../components/AddReviewModal'
@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
   order: {
     margin: theme.spacing(1, 0),
     paddingTop: '15px'
+  },
+  orderTitle: {
+    marginLeft: '10px'
   },
   product: {
     margin: '15px',
@@ -42,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
     padding: 10
   },
+  chip: {
+    marginLeft: '20px'
+  }
 
 }));
 
@@ -49,22 +55,36 @@ const Orders = () => {
   const classes = useStyles()
   const [modalState, setmodalState] = useState({ open: false, idProd: 0, orderNum: 0 })
   const [state, setState] = useState({
-    orders: []
+    onlineOrders: [], onsiteOrders: []
   })
+  const [onlineOrders, setOnlineOrders] = useState([])
+  const [onsiteOrders, setOnSiteOrders] = useState([])
   const [snack, setSnack] = useState({ open: false, message: '', severity: '' })
 
   useEffect(() => {
-    getOrders('/order/all/')
+    //getOrders('/order/all/')
+    getOrders('/order/all/online')
+    //getOrders('/order/all/onsite')
   }, [])
 
   const getOrders = (route) => {
     const { cedulaCliente } = store.get('user')
     console.log(cedulaCliente)
 
-    axios.post(route,{ cedulaCliente}).then((res) => {
-      console.log(res.data)
-      setState({ ...state, orders: res.data })
-    })
+    if(route === '/order/all/online'){
+      axios.post(route,{ cedulaCliente: cedulaCliente}).then((res) => {
+        console.log(res.data)
+        setOnlineOrders(res.data)
+        getOrders('/order/all/onsite')
+      })
+    } else if(route === '/order/all/onsite'){
+      axios.post(route,{ cedulaCliente: cedulaCliente}).then((res) => {
+        console.log(res.data)
+        setOnSiteOrders(res.data)
+      })
+    }
+
+    
   }
 
   const changeModalState = (idProd, orderNum) => {
@@ -85,17 +105,28 @@ const Orders = () => {
     setSnack({ ...snack, open: false });
   };
 
-  const validateConfirmOrder = (orderId, orderIndex) => (true)
+  const validateConfirmOrder = (orderId, orderIndex) => {
+    let order = onlineOrders[orderIndex]
+    if(order.hasOwnProperty('entrega')){
+        return order.entrega.idEstadoOrden === 1
+    }else{
+      return true
+    }
+  }
+
+  const emptyOrders = () => {
+    return onlineOrders.length > 0 && onsiteOrders.length > 0
+  }
 
   const confirmOrder = (consecutivo,idSucursal, orderIndex) => {
     axios.patch(`/order/update_state/`, { 
       consecutivo,
       idSucursal,
-      nuevoEstadoOrden: 1
+      nuevoEstadoOrden: 2
     }).then((res) => {
-      let orders = state.orders
-      //orders[orderIndex].delivery = res.data
-      setState({ ...state, orders })
+      let newOnlineOrders = onlineOrders
+      newOnlineOrders[orderIndex].entrega.idEntrega = 2
+      setOnlineOrders(newOnlineOrders)
     })
   }
 
@@ -106,24 +137,24 @@ const Orders = () => {
           Ordenes
         </Typography>
       </Box>
-      {state.orders.map((order, index) =>
+      {onlineOrders.map((order, index) =>
         <Paper key={index} className={classes.order}>
-          <Typography variant="h4">
+          <Typography variant="h4" className={classes.orderTitle}>
             Orden #{order.consecutivo}
+            <Chip label="Online" color="primary" className={classes.chip}/>
           </Typography>
           <Typography className={classes.dateLabel}>
             <span className={classes.fontBold}>Fecha de compra: </span> {new Date(order.fecha).toLocaleDateString()}
-           &nbsp;&nbsp;-&nbsp;&nbsp;
-           <span className={classes.fontBold}>Hora: </span> {`${new Date(order.fecha).getHours()}:${new Date(order.fecha).getMinutes()}:${new Date(order.fecha).getSeconds()}`}
+           &nbsp;&nbsp;&nbsp;&nbsp;
           </Typography>
-          {/*
+          {order.hasOwnProperty('entrega') ? <div>
           <Typography className={classes.dateLabel}>
-            <span className={classes.fontBold}>Fecha estimada de entrega: </span> {new Date(order.date).toLocaleDateString()}
+            <span className={classes.fontBold}>Fecha estimada de entrega: </span> {new Date(order.entrega.fechaEstimada).toLocaleDateString()}
           </Typography>
           <Typography className={classes.dateLabel}>
-            <span className={classes.fontBold}>Estado de la orden: </span> {order.delivery.status_caption}
-          </Typography>*/}
-          <Button variant="contained" color="primary" onClick={() => confirmOrder(order.id, index)} disabled={validateConfirmOrder(order.id, index)}>Confirmar recibido</Button>
+            <span className={classes.fontBold}>Estado de la orden: </span> {order.entrega.idEstadoOrden}
+          </Typography></div> : null}
+          <Button style={{marginLeft:'10px'}}variant="contained" color="primary" onClick={() => confirmOrder(order.id, index)} disabled={validateConfirmOrder(order.id, index)}>Confirmar recibido</Button>
           <Grid container >
             {order.productos.map((prod, key) =>
               <Grid className={classes.product} item key={key}>
@@ -137,7 +168,30 @@ const Orders = () => {
           </Grid>
         </Paper>
       )}
-      {state.orders.length > 0 ? null :
+      {onsiteOrders.map((order, index) =>
+        <Paper key={index} className={classes.order}>
+          <Typography variant="h4" className={classes.orderTitle}>
+            Orden #{order.consecutivo}
+            <Chip label="Presencial" color="primary" className={classes.chip}/>
+          </Typography>
+          <Typography className={classes.dateLabel}>
+            <span className={classes.fontBold}>Fecha de compra: </span> {new Date(order.fecha).toLocaleDateString()}
+           &nbsp;&nbsp;&nbsp;&nbsp;
+          </Typography>
+          <Grid container >
+            {order.productos.map((prod, key) =>
+              <Grid className={classes.product} item key={key}>
+                {/*<img src={prod.product.picture} className={classes.prodImg}></img>*/}
+                <Typography><span className={classes.fontBold}>Producto: </span> {prod.titulo}</Typography>
+                <Typography><span className={classes.fontBold}>Cantidad comprada: </span> {prod.cantidad}</Typography>
+                {/*<Typography><span className={classes.fontBold}>Cantidad en backorder: </span>{prod.backorder_quantity * -1}</Typography>*/}
+                <Button variant="contained" className={classes.reviewBTN} onClick={() => changeModalState(prod.id, order.id)}>Calificar producto</Button>
+              </Grid>
+            )}
+          </Grid>
+        </Paper>
+      )}
+      { emptyOrders ? null :
         <Box className={classes.paper}>
           <Typography variant="h4">
             No hay ordenes que mostrar
