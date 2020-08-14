@@ -11,11 +11,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { FormControl, OutlinedInput, InputLabel, InputAdornment, IconButton } from '@material-ui/core';
+import { FormControl, OutlinedInput, InputLabel, InputAdornment, IconButton, Snackbar } from '@material-ui/core';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import axios from 'axios'
 import { useHistory } from 'react-router-dom';
 import store from 'store'
+import MyMap from '../components/Map';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,7 +48,10 @@ export default function Register() {
     lastName1: '',
     lastName2: '',
     password: '',
-    birthday: ''
+    birthdate: '',
+    address: '',
+    lat: 0,
+    lng: 0
   });
 
   const [ showPassword, setShowPassword] = useState(false)
@@ -73,18 +78,51 @@ export default function Register() {
       apellido2: values.lastName2,
       fechaNacimiento: values.birthdate,
       contrasena: values.password,
+      latitud: values.lat,
+      longitud: values.lng,
+      direccion: values.address
     }).then((res) => {
       store.set('user', res.data)
       history.replace('/login')
+    }).catch(()=>{
+      setSnack({ ...snack, open: true, severity: 'error', message: 'Error en la fecha o identificacion' });
     })
   }
 
+  const submitAddress = () => {
+    axios.post('client/address/new', {
+      cedulaCliente: values.id,
+      latitud: values.lat,
+      longitud: values.lng,
+      direccion: values.address
+    }).then((res) => {
+      store.set('user', res.data)
+      history.replace('/login')
+    }).catch(()=> {
+      setSnack({ ...snack, open: true, severity: 'error', message: 'Error al insertar la direccion' });
+    })
+  }
+
+  const [snack, setSnack] = useState({ open: false, message: '', severity: '' })
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnack({ ...snack, open: false });
+  }; 
+
   const validFields = () => {
+    console.log(values)
     let valid = true;
     for (const key in values) {
       valid = valid && values[key]
     }
     return valid !== '' && valid !== 0
+  }
+
+  const handleMapChange = (map) => {
+    setValues({...values, lat: map.lat, lng: map.lng})
   }
 
 
@@ -154,7 +192,7 @@ export default function Register() {
                 required
                 fullWidth
                 id="birthdate"
-                label="Fecha de nacimiento aaaa/mm/dd"
+                label="Fecha de nacimiento aaaa-mm-dd"
                 name="birthdate"
                 value={values.birthdate}
                 onChange={handleChange('birthdate')}
@@ -187,9 +225,22 @@ export default function Register() {
                   }
                 />
               </FormControl>
+             
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="address"
+                label="Direccion del lugar de entrega"
+                name="address"
+                value={values.address}
+                onChange={handleChange('address')}
+              />
             </Grid>
 
-
+            <MyMap change={handleMapChange} ></MyMap>
           </Grid>
           
           <Button
@@ -210,6 +261,11 @@ export default function Register() {
             </Grid>
           </Grid>
       </div>
+      <Snackbar open={snack.open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={snack.severity}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

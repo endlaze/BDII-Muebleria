@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { validateCoupon, createClient, authClient, checkClientExists, createCoupon, getAllUserCoupons} from '../controllers/clientController.js'
+import { newAddress, validateCoupon, createClient, authClient, checkClientExists, createCoupon, getAllUserCoupons} from '../controllers/clientController.js'
 
 let router = express.Router();
 
@@ -11,5 +11,6 @@ router.post('/exists', cors(), checkClientExists)
 router.post('/coupon/new', cors(), createCoupon)
 router.post('/coupon/getAll', cors(), getAllUserCoupons)
 router.post('/coupon/validate', cors(), validateCoupon)
+router.post('/address/new', cors(), newAddress)
 
 export default router;
