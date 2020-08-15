@@ -3,6 +3,7 @@ import './App.css';
 import {StoreProvider} from './Store'
 import Routes from './Routes';
 import Map from './components/Map';
+import Profile from './pages/Profile';
 
 
 const App = () => {
@@ -11,10 +12,10 @@ const App = () => {
     //<AddPromotion/>
     <div className="App">
       
-      <StoreProvider>
+      {/* <StoreProvider>
         <Routes/>
-      </StoreProvider>
-
+      </StoreProvider> */}
+    <Profile></Profile>
 
     
     </div>
