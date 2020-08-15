@@ -48,6 +48,16 @@ export const getAllUserCoupons = (req, res) => {
     });
 }
 
+export const getUsrInfo = (req, res) => {
+
+    mysqlConnection.query("CALL usp_leerInfoCliente(?)", req.body.cedulaCliente, (err, result) => {
+        if (err) throw err;
+
+        result = JSON.parse(result[0][0].response)
+        res.send(result)
+    });
+}
+
 export const validateCoupon = (req, res) => {
 
     mysqlConnection.query("CALL usp_validarCupon(?, ?)", [req.body.cupon, req.body.cedulaCliente], (err, result) => {
