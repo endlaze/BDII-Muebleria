@@ -1,47 +1,56 @@
 import React, {use, useMemo, useEffect, useState} from 'react'
-import {Line} from 'react-chartjs-2'
 import axios from 'axios'
 import _ from 'lodash'
-import { Button } from '@material-ui/core'
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, makeStyles, Paper } from '@material-ui/core'
 
-
+const useStyles = makeStyles({
+  table: {
+    minWidth: 600,
+  }
+})
 
 const Report = ({ branch }) => {
 
+  const classes = useStyles();
   const [data, setData] = useState([])
-  const [labels, setLabels] = useState([])
+  const [itemsTCols, setItemsTableCols] = useState([
+    { title: 'Fecha', },
+    { title: 'IdSucursal', },
+    { title: 'CodigoProducto', },
+    { title: 'TotalFactura' },
+    { title: 'CantidadVendida', },
 
-  let graph = {
-    labels: labels,
-    datasets: [
-      {
-        label: 'Ventas',
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
-        borderCapStyle: 'butt',
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: 'miter',
-        pointBorderColor: 'rgba(75,192,192,1)',
-        pointBackgroundColor: '#fff',
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-        pointHoverBorderColor: 'rgba(220,220,220,1)',
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: data
-      }
-    ]
-  };
+  ])
 
-  const change =()=> {
-    setData([65, 70, 30, 5, 100, 32, 9])
+  useEffect(() => {
+    getReport()
+      
+  }, [])
+
+  const getReport = () => {
+    axios.get('/report/by-date').then((res) => {
+      console.log(res.data)
+      processData(res.data)
+      
+    }).catch((err) => {
+      console.log('Error')
+      console.log(err)
+    })
   }
 
+  const createData = (fecha,idSucursal, codigoProducto, totalFactura, cantidadVendida) => {
+      return {fecha, idSucursal, codigoProducto, totalFactura, cantidadVendida}
+  }
+
+  const processData = (orders) => {
+      let arrayOfData = []
+      orders.map((order) => {
+          arrayOfData.push(createData(order.fecha, order.idSucursal, order.codigoProducto, order.totalFactura, order.cantidadVendida))
+      })
+      setData(arrayOfData)
+  }
+
+  /*
   useEffect(()=> {
     axios.post('/report/all/find_report/', {
       branch: branch
@@ -70,17 +79,34 @@ const Report = ({ branch }) => {
       setData(dat)
 
     })
-  }, [branch])
+  }, [branch])*/
 
 
 
   return (
     <>
-
-      <div style={{width: '600px', margin: 'auto'}}>
-        <Line data={graph}/>
-      </div>
-      
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow >
+                {itemsTCols.map((itemCol, key) => {
+                  return <TableCell align='right' key={key}>{itemCol.title}</TableCell>
+                })}
+              </TableRow>
+          </TableHead>
+            <TableBody>
+              {data.map((order, index) => (
+                <TableRow key={index}>
+                  <TableCell align='right'>{order.fecha || 'Todas las fechas'}</TableCell>
+                  <TableCell align='right'>{order.idSucursal || 'Todas las sucursales'}</TableCell>
+                  <TableCell align='right'>{order.codigoProducto || 'Todos los cod producto'}</TableCell>
+                  <TableCell align='right'>{order.totalFactura || 'Todos los totales'}</TableCell>
+                  <TableCell align='right'>{order.cantidadVendida || 'Todas las cantidades'}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
     </>
 
   );

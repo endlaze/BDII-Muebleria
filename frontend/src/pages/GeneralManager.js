@@ -23,7 +23,7 @@ const GeneralManager = (props) => {
   const [workplace, setWorkplace] = useState('')
 
   useEffect(()=>{
-    getWorkplaces()
+    //getWorkplaces()
   }, [])
 
   const getWorkplaces = () => {
@@ -52,7 +52,7 @@ const GeneralManager = (props) => {
             <MenuItem value={''}>Todas las ventas</MenuItem>
           </Select>
       </FormControl>
-      <Report branch={workplace}></Report>
+      {/*<Report branch={workplace}></Report>*/}
     </>
   );
 
