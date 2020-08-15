@@ -14,7 +14,8 @@ import Furniture from "./components/AddFurniture";
 import store from 'store'
 import Orders from "./pages/Orders";
 import GeneralManager from "./pages/GeneralManager";
-
+import ReportPage from "./pages/ReportPage";
+import EmployeeReport from "./pages/EmployeeReport"
 
 const Routes = () => {
   return (
@@ -35,6 +36,12 @@ const Routes = () => {
           <PrivateRoute path="/orders">
             <Orders/>
           </PrivateRoute>
+          <Route path="/reports/all">
+            <ReportPage/>
+          </Route>
+          <Route path="/reports/employee">
+            <EmployeeReport/>
+          </Route>
           <Route path="/admin">
             <GeneralManager />
           </Route>
