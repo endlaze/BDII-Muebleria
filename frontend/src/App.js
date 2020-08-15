@@ -8,14 +8,12 @@ import Profile from './pages/Profile';
 
 const App = () => {
   return (
-    //<AddReview/>
-    //<AddPromotion/>
+ 
     <div className="App">
       
-      {/* <StoreProvider>
+      <StoreProvider>
         <Routes/>
-      </StoreProvider> */}
-    <Profile></Profile>
+      </StoreProvider>
 
     
     </div>

@@ -16,6 +16,8 @@ import Orders from "./pages/Orders";
 import GeneralManager from "./pages/GeneralManager";
 import ReportPage from "./pages/ReportPage";
 import EmployeeReport from "./pages/EmployeeReport"
+import Profile from "./pages/Profile"
+
 
 const Routes = () => {
   return (
@@ -45,6 +47,9 @@ const Routes = () => {
           <Route path="/admin">
             <GeneralManager />
           </Route>
+          <PrivateRoute path="/profile">
+            <Profile />
+          </PrivateRoute>
           <PrivateRoute path="/">
             <ClientHome />
           </PrivateRoute>

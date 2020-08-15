@@ -36,6 +36,7 @@ const AppNavbar = () => {
   const [store, dispatch] = useStore();
   const classes = useStyles();
   const history = useHistory();
+  const {login_type} = stores.get('user')
 
   const logout = () => {
     stores.clearAll()
@@ -63,6 +64,16 @@ const AppNavbar = () => {
             Carrito {store.cart.length}
           </Typography> 
           </Link>
+          {login_type === 'client'? 
+            <Link to="/profile">
+            <Typography className={classes.link} variant="h6" >
+              Perfil
+            </Typography> 
+            </Link>
+            :
+            <>
+            </>
+          }
           <Button onClick={()=>logout()}color="inherit">Salir</Button>
         </Toolbar>
       </AppBar>

@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
   ppContainer: {
     width: 'auto !important',
   },
+  data: {
+    textAlign: 'center'
+  }
 
 }));
 
@@ -75,15 +78,16 @@ const Profile = () => {
 
 
   useEffect(() => {
-    //getInfo()
+    getInfo()
   }, [])
 
   const getInfo = () => {
-
-    axios.post('/client/findClient', {
+    console.log(cedulaCliente)
+    axios.post('/client/find', {
       cedulaCliente: cedulaCliente
     }).then((rs) => {
-      const data = rs.data
+      const data = rs.data.cliente
+      
       setState({
         nombre: data.nombre,
         apellido1: data.apellido1,
@@ -108,20 +112,17 @@ const Profile = () => {
           </div>
         <Grid container>
 
-          <Grid item>
-            <Typography>{state.nombre}</Typography>
+          <Grid item xs={12} >
+            <Typography variant='h4' className={classes.data}>{state.nombre}</Typography>
           </Grid>
-          <Grid item>
-            <Typography>{state.apellido1}</Typography>
+          <Grid item xs={12}>
+            <Typography variant='h4' className={classes.data}>{state.apellido1}&nbsp;{state.apellido2}</Typography>
           </Grid>
-          <Grid item>
-            <Typography>{state.apellido2}</Typography>
+          <Grid item xs={12}>
+            <Typography variant='h4' className={classes.data}> Fecha de nacimiento: {state.fechaNacimiento}</Typography>
           </Grid>
-          <Grid item>
-            <Typography>{state.fechaNacimiento}</Typography>
-          </Grid>
-          <Grid item>
-            <Typography>{state.lineaDireccion}</Typography>
+          <Grid item xs={12}>
+            <Typography variant='h4' className={classes.data}> Direccion: {state.lineaDireccion}</Typography>
           </Grid>
           <Map center={[state.lat, state.lng]} zoom={13}>
             <TileLayer
